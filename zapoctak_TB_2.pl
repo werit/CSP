@@ -79,7 +79,7 @@ prepareRoomSchedule(Days, Res, [Sch|Schedule]) :-
 prepReser(_,[],-,_,0,[]).
 prepReser(Number,[Res1|ReservaRest],Rooms,SchIn,Paid,Vals):-
   updateRoomBasedOnRes(Number,Res1,Rooms,SchIn,PayPerRoom),
-  Num1 = Number +1,
+  Num1 is Number +1,
   prepReser(Num1,ReservaRest,Rooms,SchIn,PaidRest,ValsSub).
 
 % updateRoomBasedOnRes(+Number,+Res1,+Rooms,+SchIn,-PayPerRoom)
@@ -90,13 +90,13 @@ updateRoomBasedOnRes(Number,([Start,End|_],Days,People,MaxPrice),RoomsRest,SchRe
 % getRightDayInRoom predicate iterates over days till it is equal of first possible day of reservation
 % getRightDayInRoom(+Number,+Start,+Room,+People,+Sch)
 updateSchedule(Number,Start,End,Room,People,Sch):-
-  Room#>=People,!, % this room is suitable for the people from reservation
+  Room>=People,!, % this room is suitable for the people from reservation
   Day=1,
-updateBasedOnDay(Day,Number,Start,End,Sch).
+  updateBasedOnDay(Day,Number,Start,End,Sch).
 
-  updateSchedule(Number,Start,End,Room,People,Sch):-
-    Room#<People,!, % this room is NOT suitable for the people from reservation
-updateBasedOnDayRemoveAll(Number,Sch). % This could be also done with updateBasedOnDay predicate with Start and End parameter being f.e. 2 and 1 respectively
+updateSchedule(Number,Start,End,Room,People,Sch):-
+  Room#<People,!, % this room is NOT suitable for the people from reservation
+  updateBasedOnDayRemoveAll(Number,Sch). % This could be also done with updateBasedOnDay predicate with Start and End parameter being f.e. 2 and 1 respectively
 
 % predicate updates schedules
 % when the day is not the day that reservation lasts (between its possible start and end)
@@ -106,6 +106,7 @@ updateBasedOnDay(_,_,_,_,[]).
 updateBasedOnDay(Day,Number,Start,End,[Sch|SchRest]):-
   Day >=Start,
   Day =< End,!, % we are in possible day for reservation
+  % TU PRIDAT implikaciu, ze ak je tu tato rezervacia, tak nesmie presiahnut cenu celkovej rezervacie
   DayNext is Day + 1; % so we do nothing and move on to the next day
   updateBasedOnDay(DayNext,Number,Start,End,SchRest).
 
@@ -122,8 +123,8 @@ updateBasedOnDay(Day,Number,Start,End,[Sch|SchRest]):-
 % updateBasedOnDayRemoveAll(+Number,+Sch).
 updateBasedOnDayRemoveAll(_,[]).
 updateBasedOnDayRemoveAll(Number,[Sch|SchRest]):-
-Sch#\=Number,
-updateBasedOnDayRemoveAll(Number,SchRest).
+  Sch#\=Number,
+  updateBasedOnDayRemoveAll(Number,SchRest).
 
 % printSchedule(Schedule).
 %
